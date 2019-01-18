@@ -20,7 +20,14 @@ public class BILTeleOp extends TeleopCommon {
 	@Override
 	public void loop() {
 		updateTiming();
-		setMotorSpeed(robot.motorLift, (gamepad1.dpad_up ? 1.0 : 0.0) - (gamepad1.dpad_down ? 1.0 : 0.0));
+		if(robot.switchBottom.getState()&&robot.switchTop.getState()){//states are false when the switch is pressed
+            setMotorSpeed(robot.motorLift, (gamepad1.dpad_up ? 1.0 : 0.0) - (gamepad1.dpad_down ? 1.0 : 0.0));
+        }else if(robot.switchTop.getState()){
+            setMotorSpeed(robot.motorLift, (gamepad1.dpad_up ? 1.0 : 0.0) );//when top is pressed stop going up
+        }else if(robot.switchBottom.getState()){
+            setMotorSpeed(robot.motorLift, ( - (gamepad1.dpad_down ? 1.0 : 0.0)));//when bottom is pressed stop going down
+        }
+
 		setMotorSpeed(robot.motorArm, (gamepad1.dpad_left ? 1.0 : 0.0) - (gamepad1.dpad_right ? 1.0 : 0.0));
 		updateDriving();
 		robot.servoDeploy.setPosition(robot.servoDeploy.getPosition() + (gamepad1.a ? 0.01 : 0) - (gamepad1.b ? 0.01 : 0));
@@ -34,6 +41,8 @@ public class BILTeleOp extends TeleopCommon {
 		telemetry.addData("Release pos", String.format("%f", robot.servoRelease.getPosition()));
 		telemetry.addData("RedGrab pos", String.format("%f", robot.servoRedGrab.getPosition()));
 		telemetry.addData("BlueGrab pos", String.format("%f", robot.servoBlueGrab.getPosition()));
+		telemetry.addData("Bottom switch",  robot.switchBottom.getState());
+		telemetry.addData("Top switch", robot.switchTop.getState());
 		displaySpeedData();
 		telemetry.update();
 	}
